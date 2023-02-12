@@ -7,22 +7,14 @@ const peerServer = PeerServer({
 
 const state = {
   $gameState: true,
+  // DELETE THIS PLAYER
   players: [{
-    id: '1',
+    id: 'test',
     team: 'red',
-    agentId: '12',
     x: 0,
     z: 0,
     a: 0
-  },
-  {
-    id: '2',
-    team: 'red',
-    agentId: '123',
-    x: 0,
-    z: 0,
-    a: 0
-  }]
+  }],
 }
 
 function updateState() {
@@ -36,19 +28,31 @@ const clients: any[] = []
 peerServer.on('connection', (client) => {
   console.log('CONNECTION')
   clients.push(client)
-
-  client.getSocket()?.send(JSON.stringify(state))
-  client.getSocket()?.on('message', (data) => {
-    const json = JSON.parse(data as string)
-    if (json.delta) {
-      const player = state.players.find((p) => p.id === client.getId())
-      if (player) {
-        player.z += json.delta[0]
-        player.x += json.delta[1]
+  const socket = client.getSocket()
+  if (socket) {
+    socket.send(JSON.stringify(state))
+    socket.on('message', (data) => {
+      console.log(data);
+      const json = JSON.parse(data as string)
+      if (json.delta) {
+        const player = state.players.find((p) => p.id === client.getId())
+        if (player) {
+          player.z += json.delta[0]
+          player.x += json.delta[1]
+          updateState()
+        }
+      } else if (json.player) {
+        state.players.push({
+          id: client.getId(),
+          team: json.player.team,
+          x: 0,
+          z: 0,
+          a: 0
+        })
         updateState()
       }
-    }
-  })
+    })
+  }
 })
 
 peerServer.on('disconnect', (client) => {

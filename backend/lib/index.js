@@ -7,22 +7,7 @@ var peerServer = (0, PeerServer)({
 });
 var state = {
     $gameState: true,
-    players: [{
-        id: '1',
-        team: 'red',
-        agentId: '12',
-        x: 0,
-        z: 0,
-        a: 0
-    },
-    {
-        id: '2',
-        team: 'red',
-        agentId: '123',
-        x: 0,
-        z: 0,
-        a: 0
-    }]
+    players: []
 };
 function updateState() {
     clients.forEach(function (client) {
@@ -36,6 +21,7 @@ peerServer.on('connection', function (client) {
     clients.push(client);
     (_a = client.getSocket()) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify(state));
     (_b = client.getSocket()) === null || _b === void 0 ? void 0 : _b.on('message', function (data) {
+        console.log(data);
         var json = JSON.parse(data);
         if (json.delta) {
             var player = state.players.find(function (p) { return p.id === client.getId(); });
@@ -44,6 +30,16 @@ peerServer.on('connection', function (client) {
                 player.x += json.delta[1];
                 updateState();
             }
+        }
+        else if (json.player) {
+            state.players.push({
+                id: client.getId(),
+                team: json.player.team,
+                x: 0,
+                z: 0,
+                a: 0
+            });
+            updateState();
         }
     });
 });

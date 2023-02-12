@@ -48,6 +48,7 @@ export const gameState = readable<GameState>({
   peer.socket.once('message', () => {
 
     ws = (peer.socket as any)._socket as WebSocket
+    sendToPeer({ player: { team: 'red' } })
     ws.addEventListener('message', (event) => {
       try {
         const data = JSON.parse(event.data)
