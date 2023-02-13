@@ -39,6 +39,7 @@
 		panner = audio.createPanner();
 		node.connect(panner);
 		panner.connect(audio.destination);
+		//might not work due to ordering in terms of who calls who
 	}
 
 	let audioElement: HTMLAudioElement;
