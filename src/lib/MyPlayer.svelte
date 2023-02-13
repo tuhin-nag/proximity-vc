@@ -42,5 +42,5 @@
 <div
 	style:transform="translate({player.x}px, {player.z}px)"
 	style:background="yellow"
-	class="rounded-full w-8 h-8 absolute"
+	class="rounded-full w-4 h-4 absolute"
 />

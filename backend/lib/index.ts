@@ -42,6 +42,7 @@ peerServer.on('connection', (client) => {
           updateState()
         }
       } else if (json.player) {
+        if (state.players.find(function (p) { return p.id === client.getId(); })) return
         state.players.push({
           id: client.getId(),
           team: json.player.team,

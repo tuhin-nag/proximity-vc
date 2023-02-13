@@ -21,7 +21,7 @@ peerServer.on('connection', function (client) {
     clients.push(client);
     (_a = client.getSocket()) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify(state));
     (_b = client.getSocket()) === null || _b === void 0 ? void 0 : _b.on('message', function (data) {
-        console.log(data);
+        // console.log(data);
         var json = JSON.parse(data);
         if (json.delta) {
             var player = state.players.find(function (p) { return p.id === client.getId(); });
@@ -32,6 +32,7 @@ peerServer.on('connection', function (client) {
             }
         }
         else if (json.player) {
+            if (state.players.find(function (p) { return p.id === client.getId(); })) return
             state.players.push({
                 id: client.getId(),
                 team: json.player.team,

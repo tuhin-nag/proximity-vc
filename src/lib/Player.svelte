@@ -30,13 +30,18 @@
 	}
 
 	function setupCall(s: MediaStream) {
+		console.log('setting up call');
 		stream = s;
+		audioElement.srcObject = stream;
+		audioElement.play();
 		node = audio.createMediaStreamSource(stream);
+		// node.connect(audio.destination);
 		panner = audio.createPanner();
 		node.connect(panner);
 		panner.connect(audio.destination);
 	}
 
+	let audioElement: HTMLAudioElement;
 	let stream: MediaStream | undefined;
 	let node: MediaStreamAudioSourceNode | undefined;
 	let panner: PannerNode | undefined;
@@ -58,8 +63,9 @@
 	} as const;
 </script>
 
+<audio bind:this={audioElement} muted />
 <div
 	style:transform="translate({player.x}px, {player.z}px)"
 	style:background={colors[player.team]}
-	class="rounded-full w-8 h-8 absolute"
+	class="rounded-full w-4 h-4 absolute"
 />
