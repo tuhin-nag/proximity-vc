@@ -1,38 +1,49 @@
-# create-svelte
+# Real-Time Proximity Voice with TypeScript and PeerJS
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Overview
 
-## Creating a project
+This application is a real-time multiplayer game built using Svelte for the frontend and PeerJS for the backend. The program allows users to log in, control player movement, and interact with other players in a shared virtual space.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Frontend 
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+### Main App Component 
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+- Manages the overall structure of the application.
+- Controls authentication and login flow, rendering the main content when the user is authenticated.
 
-## Developing
+### Login Component
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- Provides a button to initiate the login process.
+- Generates a random UUID using `crypto.randomUUID()` and sets it as the user's ID (`$myId`).
 
-```bash
-npm run dev
+### Player  Component 
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+- Handles player movement and audio updates.
+- Utilizes the microphone through the `getMicrophone` function and sets up audio handling.
+- Updates the player's position based on user input (key presses) and communicates the changes to the server using the `sendToPeer` function.
+- Represents players visually on the screen using Svelte components (`Player` and `MyPlayer`).
 
-## Building
+## Backend (PeerJS Server)
 
-To create a production version of your app:
+### PeerJS Server 
 
-```bash
-npm run build
-```
+- Sets up a PeerJS server using the `PeerServer` from the "peer" library.
+- Initializes an initial game state (`state`) with a single player.
+- Defines a function (`updateState`) to send the current state to all connected clients.
+- Manages an array of connected clients (`clients`).
+- Listens for 'connection' events when a new client connects:
+  - Adds the client to the `clients` array.
+  - Sends the current state to the new client.
+  - Listens for 'message' events from the client's socket, updating the game state based on the received data.
+- Listens for 'disconnect' events when a client disconnects:
+  - Removes the disconnected client from the `clients` array.
 
-You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Flow Explanation
+
+- Upon user login, a PeerJS connection is established on the frontend, and the user's ID is set (`myId`).
+- The backend manages the game state, handling player connections, disconnections, and messages (player movement or new player additions).
+- The frontend, particularly the `PlayerMovement` component, captures user input and updates the player's position, sending this information to the backend using the `sendToPeer` function.
+- The backend, upon receiving messages from clients, updates the game state accordingly and broadcasts the updated state to all connected clients.
+- The game state changes are reflected in the frontend, updating the visual representation of players and maintaining a real-time multiplayer experience.
+
